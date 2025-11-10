@@ -1,0 +1,65 @@
+{
+  "task": "git_history_cleanup",
+  "context": "Reducir tamaño del repositorio eliminando archivos pesados del historial y creando una nueva base limpia",
+  "actions": [
+    {
+      "step": "1",
+      "description": "Verificar tamaño actual del repositorio y los blobs más grandes",
+      "commands": [
+        "du -sh .git",
+        "git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | awk '/^blob/ {print substr($0,6)}' | sort -n -k 2 | tail -20"
+      ]
+    },
+    {
+      "step": "2",
+      "description": "Instalar herramienta BFG Repo-Cleaner (si no está instalada)",
+      "commands": [
+        "brew install bfg || sudo apt install bfg-repo-cleaner -y"
+      ]
+    },
+    {
+      "step": "3",
+      "description": "Eliminar del historial los directorios pesados que ya no deben existir",
+      "commands": [
+        "java -jar /opt/homebrew/Cellar/bfg*/libexec/bfg.jar --delete-folders data --delete-folders node_modules --delete-folders .venv --delete-files '*.csv' --delete-files '*.gz' --no-blob-protection ."
+      ]
+    },
+    {
+      "step": "4",
+      "description": "Limpiar referencias y reconstruir el historial",
+      "commands": [
+        "git reflog expire --expire=now --all",
+        "git gc --prune=now --aggressive"
+      ]
+    },
+    {
+      "step": "5",
+      "description": "Verificar tamaño post-limpieza",
+      "commands": [
+        "du -sh .git",
+        "git count-objects -vH"
+      ]
+    },
+    {
+      "step": "6",
+      "description": "Registrar resultado en logs",
+      "commands": [
+        "echo '[INFO] Git history cleanup completed successfully' >> logs/system_setup.log"
+      ]
+    },
+    {
+      "step": "7",
+      "description": "Reinicializar remoto para subir el repositorio limpio (opcional, si el remoto es nuevo)",
+      "commands": [
+        "git remote remove origin",
+        "git remote add origin https://github.com/<tu_usuario>/<nuevo_repo>.git",
+        "git push --force --set-upstream origin main"
+      ]
+    }
+  ],
+  "output_expected": {
+    "git_folder_size": "< 150 MB",
+    "repository_total_size": "< 1.8 GB",
+    "status": "Limpieza completa, repo listo para publicación"
+  }
+}

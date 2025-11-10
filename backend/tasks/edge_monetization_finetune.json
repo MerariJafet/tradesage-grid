@@ -1,0 +1,79 @@
+{
+  "task": "edge_monetization_finetune",
+  "description": "Convertir el Edge estadístico detectado en un Edge monetario usando los datos WebSocket 12h existentes.",
+  "goals": {
+    "objective": "Maximizar Profit Factor (PF) y Sharpe Ratio mediante fine-tuning de modelos y simulación de ejecución realista.",
+    "success_criteria": {
+      "profit_factor_target": 0.8,
+      "sharpe_target": 0.5,
+      "max_drawdown": 0.05
+    }
+  },
+  "inputs": {
+    "dataset_path": "data/real_binance_ws_pilot/",
+    "symbols": ["BTCUSDT", "ETHUSDT", "BNBUSDT"],
+    "features": ["OFI", "VPIN", "Microprice", "ΔMicroprice", "Spread", "Rolling_OFI_500ms"]
+  },
+  "pipeline": [
+    {
+      "step": "1_feature_fusion",
+      "action": "Generar combinaciones no lineales OFI_norm*VPIN, ΔMicroprice/spread, rolling_OFI(500ms) para suavizar ruido.",
+      "output": "data/features_finetune.parquet"
+    },
+    {
+      "step": "2_model_selection",
+      "action": "Entrenar modelos ligeros (LogisticRegression, LightGBM) para predecir dirección a 1s, 3s y 5s.",
+      "params": {
+        "train_test_split": 0.8,
+        "scoring": "AUC",
+        "cross_validation": 5
+      },
+      "output": "models/edge_finetune_lightgbm.pkl"
+    },
+    {
+      "step": "3_hyperparameter_tuning",
+      "action": "Usar Optuna para optimizar learning_rate, num_leaves, max_depth, threshold de decisión y combinación de features.",
+      "params": {
+        "n_trials": 100,
+        "optimization_metric": "ProfitFactor"
+      },
+      "output": "reports/optuna_results.json"
+    },
+    {
+      "step": "4_execution_simulation",
+      "action": "Simular trading con latencia y costos reales.",
+      "params": {
+        "slippage_bps": 3,
+        "commission_bps": 1,
+        "latency_ms": 200,
+        "execution_mode": "limit_vs_market_mix"
+      },
+      "output": "reports/backtest_results.parquet"
+    },
+    {
+      "step": "5_metrics_computation",
+      "action": "Calcular PF, Sharpe, Hit Rate, Max Drawdown y Equity Curve.",
+      "output": "reports/monetization_metrics.json"
+    },
+    {
+      "step": "6_decision",
+      "logic": "IF ProfitFactor >= 0.8 THEN flag='MONETIZABLE' ELSE flag='REJECT'",
+      "output": "reports/edge_monetization_verdict.json"
+    }
+  ],
+  "reporting": {
+    "summary_file": "reports/edge_monetization_summary.md",
+    "include_plots": ["equity_curve.png", "feature_importance.png", "optuna_trials.png"],
+    "auto_email": false
+  },
+  "post_actions": [
+    {
+      "if": "flag == 'MONETIZABLE'",
+      "then": "Preparar script para producción con real-time feed y tamaño de posición dinámico (Kelly 0.5)."
+    },
+    {
+      "if": "flag == 'REJECT'",
+      "then": "Guardar todos los resultados y preparar lista de hipótesis de nuevos features para siguiente intento."
+    }
+  ]
+}
