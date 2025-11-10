@@ -19,8 +19,10 @@ class Settings(BaseSettings):
     
     @property
     def DATABASE_URL(self) -> str:
-        # Use SQLite for testing instead of PostgreSQL
-        return "sqlite+aiosqlite:///./tradesage_test.db"
+        # Use SQLite for testing, PostgreSQL for production
+        if self.MODE == "test":
+            return "sqlite+aiosqlite:///./tradesage_test.db"
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
     
     # Redis
     REDIS_HOST: str = "redis-1"

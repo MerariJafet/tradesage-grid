@@ -9,6 +9,7 @@ import { RiskStatusCard } from '@/components/dashboard/risk-status-card';
 import { KillSwitchButton } from '@/components/dashboard/kill-switch-button';
 import { HealthScoreIndicator } from '@/components/dashboard/health-score-indicator';
 import { AggregatedSignalsCard } from '@/components/dashboard/aggregated-signals-card';
+import config from '@/lib/config';
 
 interface SystemStatus {
   binance: {
@@ -35,7 +36,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await fetch('http://localhost:8000/api/system/status');
+        const res = await fetch(`${config.backendUrl}${config.api.systemStatus}`);
         if (res.ok) {
           const data = await res.json();
           setSystemStatus(data);
@@ -48,7 +49,7 @@ export default function DashboardPage() {
     };
 
     fetchStatus();
-    const interval = setInterval(fetchStatus, 5000); // Update every 5 seconds
+    const interval = setInterval(fetchStatus, config.refreshIntervals.status);
 
     return () => clearInterval(interval);
   }, []);
