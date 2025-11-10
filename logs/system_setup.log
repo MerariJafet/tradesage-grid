@@ -1,0 +1,77 @@
+=================================================================
+DATASET CLEANUP AND PRESERVATION LOG
+Date: 2025-11-09 20:40 UTC
+Operation: Migration to Grid+Trailing System
+=================================================================
+
+[STEP 1] COMPRESSION - real_binance_5d
+  Status: ✅ COMPLETED
+  Original Size: 1.2 GB (13,011 files)
+  Compressed: 635 MB (.tar.gz)
+  Space Saved: ~565 MB (47% reduction)
+  Location: data/real_binance_5d_backup.tar.gz
+  Action: Original directory removed
+
+[STEP 2] DELETION - Legacy ML Datasets  
+  Status: ✅ COMPLETED
+  Removed:
+    - data/datasets/ (664 MB)
+    - data/datasets_v2/ (482 MB)
+    - data/datasets_v3/ (180 MB)
+    - data/advanced_features/ (56 MB)
+    - data/advanced_features_5d/ (528 MB)
+    - data/real_binance_pilot/ (250 MB)
+    - data/real_binance_ws_pilot/ (115 MB)
+  Total Space Recovered: ~2.3 GB
+
+[STEP 3] COMPRESSION - Historical CSVs
+  Status: ✅ COMPLETED
+  Files compressed:
+    - btc_1m_12months.csv → .gz (74.3% reduction)
+    - ethusdt_1m_12months.csv → .gz (72.9% reduction)
+    - bnbusdt_1m_12months.csv → .gz (75.8% reduction)
+    - BTCUSDT_splits.csv → .gz (73.5% reduction)
+    - ETHUSDT_splits.csv → .gz (73.5% reduction)
+    - BNBUSDT_splits.csv → .gz (73.5% reduction)
+  Average compression: ~73%
+
+[STEP 4] SCRIPT CREATION
+  Status: ✅ COMPLETED
+  File: scripts/download_binance_data.py
+  Purpose: Download fresh Binance data on demand
+  Usage: python scripts/download_binance_data.py [SYMBOL] [INTERVAL] [DAYS]
+  Example: python scripts/download_binance_data.py BTCUSDT 1m 10
+
+=================================================================
+SUMMARY
+=================================================================
+Total Space Recovered: ~2.9 GB
+Project Size Before: 7.2 GB
+Project Size After: ~4.3 GB (estimated)
+Data Preserved: All critical historical data backed up/compressed
+
+NEXT STEPS:
+1. Git cleanup (.git directory = 2.4 GB)
+2. Create/update .gitignore
+3. Clean old logs (45 MB)
+4. Consider archiving old models
+
+Data preserved for future use:
+- data/real_binance_5d_backup.tar.gz (5d production data)
+- data/*.csv.gz (12-month historical data)
+- data/edge_validation/ (kept for reference)
+
+=================================================================
+[STEP 5] GIT HISTORY CLEANUP
+  Status: ✅ COMPLETED
+  Method: Reinitialized repository (fresh git history, branch main)
+  Actions:
+    - Removed old .git (2.3 GB) and archived to ../BotGridSystem.git.backup
+    - Added project-wide .gitignore for data/, node_modules/, .venv/, build artifacts
+    - Created placeholders data/.gitkeep and data/raw/.gitkeep
+    - Removed .venv/ and frontend/node_modules/ from workspace
+  Resulting .git size: 80 KB
+  Workspace size: 821 MB
+  Repository ready for new remote push
+
+[STEP 8] GITHUB VALIDATION ✅ Repository linked and ready for development
