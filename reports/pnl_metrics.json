@@ -1,0 +1,17 @@
+{
+  "synthetic": {
+    "dataset": "synthetic",
+    "total_trades": 12,
+    "winning_trades": 2,
+    "losing_trades": 4,
+    "breakeven_trades": 6,
+    "win_rate": 16.666666666666664,
+    "gross_profit": 0.0016228282037873782,
+    "gross_loss": -0.001085428536446841,
+    "net_pnl": 0.0005373996673405373,
+    "average_pnl": 4.4783305611711435e-05,
+    "max_drawdown_pct": 1.5929943688154475e-05,
+    "max_equity": 10000.000220109272,
+    "min_equity": 9999.998387055633
+  }
+}

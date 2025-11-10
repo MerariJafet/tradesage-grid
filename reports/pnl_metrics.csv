@@ -1,0 +1,2 @@
+dataset,total_trades,winning_trades,losing_trades,breakeven_trades,win_rate,gross_profit,gross_loss,net_pnl,average_pnl,max_drawdown_pct,max_equity,min_equity
+synthetic,12,2,4,6,16.666666666666664,0.0016228282037873782,-0.001085428536446841,0.0005373996673405373,4.4783305611711435e-05,1.5929943688154475e-05,10000.000220109272,9999.998387055633

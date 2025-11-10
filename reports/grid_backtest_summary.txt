@@ -1,0 +1,10 @@
+⚠️ No datasets found in data/raw. Falling back to synthetic price series.
+Dataset: synthetic
+  Trades: 12
+  Net PnL: 0.00
+  Win rate: 16.67%
+  Max drawdown: 0.00%
+
+Summary files generated:
+  JSON: reports/pnl_metrics.json
+  CSV:  reports/pnl_metrics.csv
