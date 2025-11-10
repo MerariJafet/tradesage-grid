@@ -1,9 +1,21 @@
 GRID OPTIMISATION SUMMARY
-Generated: 20251110-050304 UTC
+Generated: 20251110-053104 UTC
 
-Dataset: synthetic
-  Best configuration: spacing=0.25|levels=4|capital=10000.0
-  Profit factor: 2.4026
+Dataset: BTCUSDT_markprice
+  Best configuration: spacing=0.35|levels=4|capital=5000.0
+  Profit factor: 0.0000
   Net PnL: 0.00
+  Max drawdown: 0.00%
+
+Dataset: ETHUSDT_markprice
+  Best configuration: spacing=0.35|levels=4|capital=10000.0
+  Profit factor: 0.0000
+  Net PnL: -0.01
+  Max drawdown: 0.00%
+
+Dataset: BNBUSDT_markprice
+  Best configuration: spacing=0.35|levels=4|capital=10000.0
+  Profit factor: 0.0000
+  Net PnL: -0.01
   Max drawdown: 0.00%
 

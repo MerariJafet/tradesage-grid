@@ -1,7 +1,11 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 class PositionSide(str, Enum):
     """Lado de la posición"""
@@ -28,7 +32,7 @@ class Position(BaseModel):
 
     # Precios de entrada
     entry_price: float
-    entry_time: datetime = Field(default_factory=datetime.utcnow)
+    entry_time: datetime = Field(default_factory=utc_now)
     quantity: float
 
     # Gestión de riesgo
@@ -67,7 +71,7 @@ class Position(BaseModel):
     def close(self, exit_price: float, exit_reason: str, exit_commission: float = 0.0):
         """Cerrar posición"""
         self.exit_price = exit_price
-        self.exit_time = datetime.utcnow()
+        self.exit_time = datetime.now(timezone.utc)
         self.exit_reason = exit_reason
         self.exit_commission = exit_commission
         self.status = PositionStatus.CLOSED
@@ -97,7 +101,7 @@ class Position(BaseModel):
 
     def get_duration_seconds(self) -> float:
         """Obtener duración de la posición en segundos"""
-        end_time = self.exit_time if self.exit_time else datetime.utcnow()
+        end_time = self.exit_time if self.exit_time else datetime.now(timezone.utc)
         return (end_time - self.entry_time).total_seconds()
 
     def to_dict(self) -> dict:

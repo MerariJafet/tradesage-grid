@@ -1,5 +1,5 @@
 from typing import List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.utils.logger import get_logger
 
 logger = get_logger("drawdown_tracker")
@@ -37,10 +37,10 @@ class DrawdownTracker:
         self.max_drawdown_amount_historical = 0.0
 
         # Timestamps
-        self.peak_timestamp = datetime.utcnow()
-        self.trough_timestamp = datetime.utcnow()
+        self.peak_timestamp = datetime.now(timezone.utc)
+        self.trough_timestamp = datetime.now(timezone.utc)
         self.drawdown_start = None
-        self.last_update = datetime.utcnow()
+        self.last_update = datetime.now(timezone.utc)
 
         # Historia
         self.drawdown_events: List[dict] = []
@@ -53,7 +53,7 @@ class DrawdownTracker:
             dict con info de drawdown si hay cambio significativo
         """
         self.current_balance = current_balance
-        self.last_update = datetime.utcnow()
+        self.last_update = datetime.now(timezone.utc)
 
         # Nuevo peak
         if current_balance > self.peak_balance:
@@ -62,7 +62,7 @@ class DrawdownTracker:
                 self._record_recovery()
 
             self.peak_balance = current_balance
-            self.peak_timestamp = datetime.utcnow()
+            self.peak_timestamp = datetime.now(timezone.utc)
             self.current_drawdown_pct = 0.0
             self.current_drawdown_amount = 0.0
             self.drawdown_start = None
@@ -85,12 +85,12 @@ class DrawdownTracker:
 
         # Iniciar tracking de drawdown
         if self.drawdown_start is None and drawdown_pct > 0.1:  # > 0.1%
-            self.drawdown_start = datetime.utcnow()
+            self.drawdown_start = datetime.now(timezone.utc)
 
         # Nuevo trough (punto más bajo)
         if current_balance < self.trough_balance:
             self.trough_balance = current_balance
-            self.trough_timestamp = datetime.utcnow()
+            self.trough_timestamp = datetime.now(timezone.utc)
 
         # Actualizar máximo histórico
         if drawdown_pct > self.max_drawdown_pct_historical:
@@ -130,7 +130,7 @@ class DrawdownTracker:
     def _get_drawdown_duration(self) -> int:
         """Obtener duración del drawdown actual en segundos"""
         if self.drawdown_start:
-            return int((datetime.utcnow() - self.drawdown_start).total_seconds())
+            return int((datetime.now(timezone.utc) - self.drawdown_start).total_seconds())
         return 0
 
     def _record_recovery(self):
@@ -142,7 +142,7 @@ class DrawdownTracker:
                 "max_drawdown_pct": self.current_drawdown_pct,
                 "max_drawdown_amount": self.current_drawdown_amount,
                 "start_time": self.drawdown_start,
-                "end_time": datetime.utcnow(),
+                "end_time": datetime.now(timezone.utc),
                 "duration_seconds": self._get_drawdown_duration()
             }
 

@@ -1,7 +1,7 @@
 # backend/app/core/telemetry/performance_tracker.py
 
 from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import asyncio
 from collections import defaultdict
 from app.core.telemetry.sensors import (
@@ -49,7 +49,7 @@ class PerformanceTracker:
 
         # Estado del tracker
         self.is_tracking = False
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(timezone.utc)
 
     def get_latency_sensor(self, name: str) -> LatencySensor:
         """Obtener sensor de latencia"""
@@ -90,7 +90,7 @@ class PerformanceTracker:
             "winning_trades": winning_trades,
             "total_pnl": total_pnl,
             "win_rate": win_rate,
-            "last_update": datetime.utcnow()
+            "last_update": datetime.now(timezone.utc)
         }
 
     def record_bar_processing(self, symbol: str, processing_time_ms: float):
@@ -155,8 +155,8 @@ class PerformanceTracker:
         total_pnl = sum(s.get("total_pnl", 0) for s in strategy_performance.values())
 
         return {
-            "timestamp": datetime.utcnow(),
-            "uptime_seconds": (datetime.utcnow() - self.start_time).total_seconds(),
+            "timestamp": datetime.now(timezone.utc),
+            "uptime_seconds": (datetime.now(timezone.utc) - self.start_time).total_seconds(),
 
             "latency": latency_stats,
             "execution_quality": execution_stats,
@@ -245,6 +245,6 @@ class PerformanceTracker:
             sensor.sequence_gaps = 0
 
         self.strategy_stats.clear()
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(timezone.utc)
 
         logger.info("performance_stats_reset")

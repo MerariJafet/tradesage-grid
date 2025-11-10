@@ -27,6 +27,16 @@ def load_price_series(path: Path, column: str = "close", limit: int | None = Non
     if not path.exists():
         return generate_synthetic_series(limit or 720)
 
+    if path.is_dir():
+        parquet_prices = _load_parquet_prices(path, limit)
+        if parquet_prices:
+            return parquet_prices
+        first_csv = next(path.glob("*.csv"), None)
+        if first_csv:
+            path = first_csv
+        else:
+            return generate_synthetic_series(limit or 720)
+
     opener = gzip.open if path.suffix == ".gz" else open
     with opener(path, "rt", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
@@ -42,6 +52,36 @@ def load_price_series(path: Path, column: str = "close", limit: int | None = Non
     if not prices:
         return generate_synthetic_series(limit or 720)
     return prices
+
+
+def _load_parquet_prices(path: Path, limit: int | None) -> List[float]:
+    try:
+        import duckdb
+    except ImportError:  # pragma: no cover
+        return []
+
+    pattern = str(path / "**/*.parquet")
+    con = duckdb.connect()
+    try:
+        candidates = ["mark_price", "close", "price"]
+        for column in candidates:
+            try:
+                query = (
+                    f"SELECT {column} FROM read_parquet('{pattern}') "
+                    "ORDER BY timestamp"
+                )
+                if limit:
+                    query += f" LIMIT {limit}"
+                rows = con.execute(query).fetchall()
+            except duckdb.ConversionException:
+                continue
+            except duckdb.BinderException:
+                continue
+            if rows:
+                return [float(row[0]) for row in rows]
+    finally:
+        con.close()
+    return []
 
 
 def _extract_price(row: dict, column: str) -> float | None:

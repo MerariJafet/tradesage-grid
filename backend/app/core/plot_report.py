@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, List
 
@@ -26,9 +26,9 @@ def _timestamps(executions: Iterable[ExecutionRecord]) -> List[datetime]:
         if exec.timestamp:
             stamps.append(exec.timestamp)
         else:
-            stamps.append(datetime.utcnow())
+            stamps.append(datetime.now(timezone.utc))
     if not stamps:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         return [now]
     return stamps
 
@@ -45,7 +45,7 @@ def plot_pnl_curve(executions: Iterable[ExecutionRecord], starting_capital: floa
 
     if not cumulative:
         cumulative = [starting_capital]
-        timestamps = [datetime.utcnow()]
+        timestamps = [datetime.now(timezone.utc)]
     else:
         timestamps = _timestamps(executions)
 
@@ -85,7 +85,7 @@ def plot_drawdown(executions: Iterable[ExecutionRecord], starting_capital: float
         else:
             drawdowns.append((peak - value) / peak * 100.0)
 
-    timestamps = _timestamps(executions) if executions else [datetime.utcnow()]
+    timestamps = _timestamps(executions) if executions else [datetime.now(timezone.utc)]
 
     plt.figure(figsize=(10, 4))
     plt.plot(timestamps, drawdowns, color="#d62728", label="Drawdown %")

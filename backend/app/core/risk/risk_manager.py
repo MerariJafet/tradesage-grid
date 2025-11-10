@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.core.risk.risk_events import RiskEvent, RiskEventType, RiskEventSeverity
 from app.core.risk.drawdown_tracker import DrawdownTracker
 from app.core.risk.position_limits import PositionLimits
@@ -63,8 +63,8 @@ class RiskManager:
         self.weekly_pnl = 0.0
         self.day_start_balance = initial_balance
         self.week_start_balance = initial_balance
-        self.current_day = datetime.utcnow().date()
-        self.current_week = datetime.utcnow().isocalendar()[1]
+        self.current_day = datetime.now(timezone.utc).date()
+        self.current_week = datetime.now(timezone.utc).isocalendar()[1]
 
         # Eventos de riesgo
         self.risk_events: List[RiskEvent] = []
@@ -166,7 +166,7 @@ class RiskManager:
         # Tracking de pérdidas consecutivas
         if pnl < 0:
             self.consecutive_losses += 1
-            self.last_loss_timestamp = datetime.utcnow()
+            self.last_loss_timestamp = datetime.now(timezone.utc)
 
             if self.consecutive_losses >= self.max_consecutive_losses:
                 event = RiskEvent(
@@ -215,8 +215,8 @@ class RiskManager:
             # Verificar si el cooldown expiró
             if self.last_loss_timestamp:
                 cooldown_end = self.last_loss_timestamp + timedelta(minutes=self.cooldown_after_loss_minutes)
-                if datetime.utcnow() < cooldown_end:
-                    remaining = (cooldown_end - datetime.utcnow()).total_seconds() / 60
+                if datetime.now(timezone.utc) < cooldown_end:
+                    remaining = (cooldown_end - datetime.now(timezone.utc)).total_seconds() / 60
                     return False, f"Cooldown active: {remaining:.1f} minutes remaining"
                 else:
                     # Cooldown expiró, reactivar
@@ -302,7 +302,7 @@ class RiskManager:
 
     def _check_period_resets(self):
         """Verificar si hay que resetear contadores de período"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         # Reset diario
         if now.date() != self.current_day:

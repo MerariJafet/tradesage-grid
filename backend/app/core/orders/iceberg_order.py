@@ -1,6 +1,6 @@
 # backend/app/core/orders/iceberg_order.py
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from .base_order import BaseOrder, OrderSide, OrderStatus
 
@@ -14,7 +14,7 @@ class IcebergOrder(BaseOrder):
             symbol=symbol,
             side=side,
             quantity=total_quantity,  # Total quantity
-            timestamp=timestamp or datetime.utcnow(),
+            timestamp=timestamp or datetime.now(timezone.utc),
             **kwargs
         )
         self.display_quantity = display_quantity  # Visible quantity

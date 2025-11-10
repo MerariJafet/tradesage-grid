@@ -2,7 +2,7 @@
 
 from typing import Dict, Optional, List
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 import random
 from app.core.execution.order import Order, OrderStatus, OrderSide
 from app.core.execution.slippage_model import SlippageModel
@@ -87,7 +87,7 @@ class PaperExchange:
             price=order.price or current_price
         )
 
-        order.submitted_at = datetime.utcnow()
+        order.submitted_at = datetime.now(timezone.utc)
         order.status = OrderStatus.SUBMITTED
 
         # Simular latencia de ejecución (10-50ms)
@@ -158,7 +158,7 @@ class PaperExchange:
         )
 
         order.commission = commission
-        order.filled_at = datetime.utcnow()
+        order.filled_at = datetime.now(timezone.utc)
 
         # Actualizar balance y posiciones
         self._update_balance_and_positions(order)

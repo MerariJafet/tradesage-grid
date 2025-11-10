@@ -1,6 +1,6 @@
 # backend/app/core/orders/order_manager.py
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 from .base_order import BaseOrder, OrderStatus
 from app.utils.logger import get_logger
@@ -17,7 +17,7 @@ class OrderManager:
 
     def add_order(self, order: BaseOrder) -> str:
         """Add an order to the manager"""
-        order_id = f"order_{len(self.orders) + 1}_{int(datetime.utcnow().timestamp())}"
+        order_id = f"order_{len(self.orders) + 1}_{int(datetime.now(timezone.utc).timestamp())}"
         order.order_id = order_id
         self.orders.append(order)
         logger.info("order_added", order_id=order_id, type=type(order).__name__, symbol=order.symbol)

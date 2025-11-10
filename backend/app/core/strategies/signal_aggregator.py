@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 import pandas as pd
 import numpy as np
 from app.core.strategies.signal import TradingSignal, SignalAction, SignalType
@@ -77,13 +77,13 @@ class SignalAggregatorV2:
             'sharpe': metrics.get('sharpe', 0),
             'profit_factor': metrics.get('profit_factor', 1),
             'win_rate': metrics.get('win_rate', 0),
-            'timestamp': pd.to_datetime(metrics.get('timestamp', datetime.utcnow()))
+            'timestamp': pd.to_datetime(metrics.get('timestamp', datetime.now(timezone.utc)))
         }])
 
         self.performance_history = pd.concat([self.performance_history, new_row], ignore_index=True)
 
         # Mantener solo últimos 365 días
-        cutoff_date = datetime.utcnow() - pd.Timedelta(days=365)
+        cutoff_date = datetime.now(timezone.utc) - pd.Timedelta(days=365)
         self.performance_history = self.performance_history[
             self.performance_history['timestamp'] > cutoff_date
         ]
@@ -104,7 +104,7 @@ class SignalAggregatorV2:
             return
 
         # Filtrar datos recientes
-        cutoff_date = datetime.utcnow() - pd.Timedelta(days=self.recalibration_window_days)
+        cutoff_date = datetime.now(timezone.utc) - pd.Timedelta(days=self.recalibration_window_days)
         recent_perf = self.performance_history[
             self.performance_history['timestamp'] > cutoff_date
         ]
@@ -149,7 +149,7 @@ class SignalAggregatorV2:
         if total_weight > 0:
             self.dynamic_weights = {k: v/total_weight for k, v in self.dynamic_weights.items()}
 
-        self.last_recalibration = datetime.utcnow()
+        self.last_recalibration = datetime.now(timezone.utc)
 
         logger.info("weights_recalibrated",
                    weights=self.dynamic_weights,
@@ -414,7 +414,7 @@ class SignalAggregatorV2:
         """
         # Recalibrar weights si es necesario (cada hora)
         if (self.last_recalibration is None or
-            (datetime.utcnow() - self.last_recalibration).total_seconds() > 3600):
+            (datetime.now(timezone.utc) - self.last_recalibration).total_seconds() > 3600):
             self.recalibrate_weights()
 
         # Separar por dirección
@@ -620,7 +620,7 @@ class SignalAggregatorV2:
                 side=order_side,
                 quantity=aggregated_signal.quantity,
                 limit_price=limit_price,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.now(timezone.utc)
             )
             order_ids.append(order_manager.add_order(limit_order))
 
@@ -632,7 +632,7 @@ class SignalAggregatorV2:
                 total_quantity=aggregated_signal.quantity,
                 display_quantity=iceberg_visible,
                 limit_price=limit_price,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.now(timezone.utc)
             )
             order_ids.append(order_manager.add_order(iceberg_order))
 
@@ -656,7 +656,7 @@ class SignalAggregatorV2:
                     quantity=aggregated_signal.quantity,
                     stop_price=stop_price,
                     limit_price=stop_price * 0.998,  # 0.2% slippage protection
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.now(timezone.utc)
                 )
                 order_ids.append(order_manager.add_order(stop_loss_order))
 
@@ -668,7 +668,7 @@ class SignalAggregatorV2:
                     side=OrderSide.SELL if order_side == OrderSide.BUY else OrderSide.BUY,
                     quantity=aggregated_signal.quantity,
                     limit_price=aggregated_signal.take_profit,
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.now(timezone.utc)
                 )
                 order_ids.append(order_manager.add_order(take_profit_order))
 
@@ -679,7 +679,7 @@ class SignalAggregatorV2:
                     side=OrderSide.SELL if order_side == OrderSide.BUY else OrderSide.BUY,
                     quantity=aggregated_signal.quantity,
                     trailing_percent=trailing_atr,  # Use ATR multiplier as percent
-                    timestamp=datetime.utcnow()
+                    timestamp=datetime.now(timezone.utc)
                 )
                 # Set initial price for trailing
                 trailing_stop.set_initial_price(aggregated_signal.entry_price)

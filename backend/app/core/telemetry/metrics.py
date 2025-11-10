@@ -1,7 +1,7 @@
 # backend/app/core/telemetry/metrics.py
 
 from typing import Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import asyncio
 from app.core.telemetry.performance_tracker import PerformanceTracker
 from app.utils.logger import get_logger
@@ -32,7 +32,7 @@ class TelemetrySystem:
     def __init__(self):
         self.performance_tracker = PerformanceTracker()
         self.is_enabled = True
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(timezone.utc)
 
         logger.info("telemetry_system_initialized")
 
@@ -164,8 +164,8 @@ class TelemetrySystem:
         health = self.performance_tracker.get_health_score()
 
         return {
-            "timestamp": datetime.utcnow(),
-            "uptime_seconds": (datetime.utcnow() - self.start_time).total_seconds(),
+            "timestamp": datetime.now(timezone.utc),
+            "uptime_seconds": (datetime.now(timezone.utc) - self.start_time).total_seconds(),
             "health_score": health["score"],
             "status": health["status"],
             "issues": health["issues"],
@@ -179,7 +179,7 @@ class TelemetrySystem:
             latency_stats[name] = sensor.get_stats()
 
         return {
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
             "latencies": latency_stats
         }
 
@@ -190,14 +190,14 @@ class TelemetrySystem:
             execution_stats[symbol] = sensor.get_stats()
 
         return {
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
             "execution_quality": execution_stats
         }
 
     def get_performance_report(self) -> Dict[str, Any]:
         """Obtener reporte de rendimiento de estrategias"""
         return {
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
             "strategy_performance": dict(self.performance_tracker.strategy_stats)
         }
 
@@ -214,7 +214,7 @@ class TelemetrySystem:
     def reset(self):
         """Resetear todas las métricas"""
         self.performance_tracker.reset_stats()
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(timezone.utc)
         logger.info("telemetry_reset")
 
 # Inicializar sistema global

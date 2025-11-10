@@ -8,7 +8,7 @@ from app.core.indicators.vwap import VWAP
 from app.core.indicators.obi import OBI
 from app.core.indicators.cache import IndicatorCache
 from app.utils.logger import get_logger
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = get_logger("indicator_manager")
 
@@ -140,7 +140,7 @@ class IndicatorManager:
                 {
                     'obi_5': obi_5,
                     'obi_10': obi_10,
-                    'last_update': str(datetime.utcnow())
+                    'last_update': str(datetime.now(timezone.utc))
                 },
                 ttl=10  # 10 segundos (orderbook cambia rápido)
             )

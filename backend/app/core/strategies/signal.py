@@ -1,7 +1,11 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 class SignalAction(str, Enum):
     """Acciones posibles de señal"""
@@ -44,7 +48,7 @@ class TradingSignal(BaseModel):
     source_signals: list[str] = Field(default_factory=list, description="Señales fuente para señales agregadas")
 
     # Metadata
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=utc_now)
     expiry_seconds: Optional[int] = Field(default=None, description="Tiempo de expiración de la señal")
 
     # Validación
@@ -88,5 +92,5 @@ class TradingSignal(BaseModel):
         if self.expiry_seconds is None:
             return False
 
-        elapsed = (datetime.utcnow() - self.timestamp).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - self.timestamp).total_seconds()
         return elapsed > self.expiry_seconds

@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 class RiskEventType(str, Enum):
@@ -27,7 +27,7 @@ class RiskEvent(BaseModel):
     message: str
     value: float
     limit: float
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = datetime.now(timezone.utc)
     symbol: Optional[str] = None
     strategy: Optional[str] = None
 

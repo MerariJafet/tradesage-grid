@@ -1,7 +1,7 @@
 # backend/app/core/telemetry/sensors.py
 
 from typing import Dict, Optional, Any, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import statistics
 import asyncio
 from app.utils.logger import get_logger
@@ -21,7 +21,7 @@ class LatencySensor:
 
     def start(self, operation_id: str):
         """Iniciar medición de latencia"""
-        self.start_times[operation_id] = datetime.utcnow()
+        self.start_times[operation_id] = datetime.now(timezone.utc)
 
     def end(self, operation_id: str) -> Optional[float]:
         """Finalizar medición y retornar latencia en ms"""
@@ -30,7 +30,7 @@ class LatencySensor:
             return None
 
         start_time = self.start_times.pop(operation_id)
-        latency = (datetime.utcnow() - start_time).total_seconds() * 1000  # ms
+        latency = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000  # ms
 
         # Almacenar muestra
         self.samples.append(latency)
@@ -86,7 +86,7 @@ class ExecutionQualitySensor:
         """Registrar ejecución de orden"""
 
         execution = {
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
             "expected_price": expected_price,
             "filled_price": filled_price,
             "expected_quantity": expected_quantity,
@@ -113,7 +113,7 @@ class ExecutionQualitySensor:
         """Obtener estadísticas de calidad de ejecución"""
 
         # Filtrar por tiempo
-        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         recent_executions = [e for e in self.executions if e["timestamp"] > cutoff]
 
         if not recent_executions:
@@ -160,7 +160,7 @@ class MarketDataSensor:
 
     def record_bar(self, bar_timestamp: datetime):
         """Registrar recepción de barra"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         delay = (now - bar_timestamp).total_seconds() * 1000  # ms
 
         self.bar_delays.append(delay)
@@ -171,7 +171,7 @@ class MarketDataSensor:
 
     def record_tick(self, tick_timestamp: datetime):
         """Registrar recepción de tick"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         delay = (now - tick_timestamp).total_seconds() * 1000  # ms
 
         self.tick_delays.append(delay)
@@ -189,8 +189,8 @@ class MarketDataSensor:
 
         return {
             "symbol": self.symbol,
-            "last_bar_age_seconds": (datetime.utcnow() - self.last_bar_time).total_seconds() if self.last_bar_time else None,
-            "last_tick_age_seconds": (datetime.utcnow() - self.last_tick_time).total_seconds() if self.last_tick_time else None,
+            "last_bar_age_seconds": (datetime.now(timezone.utc) - self.last_bar_time).total_seconds() if self.last_bar_time else None,
+            "last_tick_age_seconds": (datetime.now(timezone.utc) - self.last_tick_time).total_seconds() if self.last_tick_time else None,
             "avg_bar_delay_ms": statistics.mean(self.bar_delays) if self.bar_delays else 0,
             "avg_tick_delay_ms": statistics.mean(self.tick_delays) if self.tick_delays else 0,
             "sequence_gaps": self.sequence_gaps,

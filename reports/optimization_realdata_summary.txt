@@ -1,0 +1,10 @@
+summary: reports/optimization_summary.txt
+pnl_BTCUSDT_markprice: reports/plots/pnl_curve_BTCUSDT_markprice_20251110-053104.png
+drawdown_BTCUSDT_markprice: reports/plots/drawdown_BTCUSDT_markprice_20251110-053104.png
+hist_BTCUSDT_markprice: reports/plots/pnl_hist_BTCUSDT_markprice_20251110-053104.png
+pnl_ETHUSDT_markprice: reports/plots/pnl_curve_ETHUSDT_markprice_20251110-053104.png
+drawdown_ETHUSDT_markprice: reports/plots/drawdown_ETHUSDT_markprice_20251110-053104.png
+hist_ETHUSDT_markprice: reports/plots/pnl_hist_ETHUSDT_markprice_20251110-053104.png
+pnl_BNBUSDT_markprice: reports/plots/pnl_curve_BNBUSDT_markprice_20251110-053104.png
+drawdown_BNBUSDT_markprice: reports/plots/drawdown_BNBUSDT_markprice_20251110-053104.png
+hist_BNBUSDT_markprice: reports/plots/pnl_hist_BNBUSDT_markprice_20251110-053104.png

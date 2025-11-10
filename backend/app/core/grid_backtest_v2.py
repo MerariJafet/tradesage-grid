@@ -43,13 +43,18 @@ def discover_datasets(data_dir: Path) -> List[Path]:
     files: List[Path] = []
     for pattern in patterns:
         files.extend(sorted(data_dir.glob(pattern)))
-    return files
+
+    parquet_dirs = [p for p in data_dir.rglob("markprice") if p.is_dir()]
+    return files + parquet_dirs
 
 
 def prepare_prices(resource: Path, limit: int) -> Tuple[str, List[float]]:
     if resource.exists():
         series = load_price_series(resource, limit=limit)
-        return resource.name, series
+        label = resource.name
+        if resource.is_dir() and resource.parent.name:
+            label = f"{resource.parent.name}_{resource.name}"
+        return label, series
     return "synthetic", generate_synthetic_series(limit or 720)
 
 

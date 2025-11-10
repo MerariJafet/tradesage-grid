@@ -5,7 +5,7 @@ import argparse
 import math
 import sys
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Iterable, List, Tuple
 
@@ -61,7 +61,8 @@ def discover_datasets(data_root: Path) -> List[Path]:
     files: List[Path] = []
     for pattern in patterns:
         files.extend(sorted(data_root.glob(pattern)))
-    return files
+    parquet_dirs = [path for path in data_root.rglob("markprice") if path.is_dir()]
+    return files + parquet_dirs
 
 
 def parse_float_list(raw: str) -> List[float]:
@@ -75,7 +76,10 @@ def parse_int_list(raw: str) -> List[int]:
 def ensure_prices(resource: Path, limit: int) -> Tuple[str, List[float]]:
     if resource.exists():
         series = load_price_series(resource, limit=limit)
-        return resource.name, series
+        label = resource.name
+        if resource.is_dir() and resource.parent.name:
+            label = f"{resource.parent.name}_{resource.name}"
+        return label, series
     return "synthetic", generate_synthetic_series(limit or 720)
 
 
@@ -155,7 +159,7 @@ def generate_reports(
     reports_dir.mkdir(parents=True, exist_ok=True)
     plots_dir.mkdir(parents=True, exist_ok=True)
 
-    timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     summary_path = reports_dir / "optimization_summary.txt"
 
     with summary_path.open("w", encoding="utf-8") as handle:

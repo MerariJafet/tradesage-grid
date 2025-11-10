@@ -2,9 +2,13 @@
 
 from pydantic import BaseModel, Field
 from typing import Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 import uuid
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 class OrderSide(str, Enum):
     """Lado de la orden"""
@@ -62,7 +66,7 @@ class Order(BaseModel):
     slippage: float = 0.0
 
     # Timestamps
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=utc_now)
     submitted_at: Optional[datetime] = None
     filled_at: Optional[datetime] = None
 

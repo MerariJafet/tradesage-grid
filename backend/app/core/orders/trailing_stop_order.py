@@ -1,6 +1,6 @@
 # backend/app/core/orders/trailing_stop_order.py
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from .base_order import BaseOrder, OrderSide, OrderStatus
 
@@ -14,7 +14,7 @@ class TrailingStopOrder(BaseOrder):
             symbol=symbol,
             side=side,
             quantity=quantity,
-            timestamp=timestamp or datetime.utcnow(),
+            timestamp=timestamp or datetime.now(timezone.utc),
             **kwargs
         )
         self.trailing_percent = trailing_percent / 100.0  # Convert to decimal

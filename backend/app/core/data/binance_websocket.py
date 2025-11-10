@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import AsyncIterator, Dict, Optional
 
@@ -11,7 +11,7 @@ from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 
 
 def _format_timestamp() -> str:
-    return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 
 async def stream_orderbook(symbol: str = "BTCUSDT", depth: int = 5) -> AsyncIterator[Dict[str, float]]:
