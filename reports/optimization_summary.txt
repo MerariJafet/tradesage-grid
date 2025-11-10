@@ -1,0 +1,9 @@
+GRID OPTIMISATION SUMMARY
+Generated: 20251110-050304 UTC
+
+Dataset: synthetic
+  Best configuration: spacing=0.25|levels=4|capital=10000.0
+  Profit factor: 2.4026
+  Net PnL: 0.00
+  Max drawdown: 0.00%
+
