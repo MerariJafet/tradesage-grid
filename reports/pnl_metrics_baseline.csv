@@ -1,0 +1,4 @@
+dataset,total_trades,winning_trades,losing_trades,breakeven_trades,win_rate,gross_profit,gross_loss,net_pnl,average_pnl,max_drawdown_pct,max_equity,min_equity
+BTCUSDT_markprice,1,0,0,1,0.0,0.0,0.0,0.0,0.0,0.0,9999.9786619588,9999.9786619588
+ETHUSDT_markprice,1,0,0,1,0.0,0.0,0.0,0.0,0.0,0.0,9999.999274314965,9999.999274314965
+BNBUSDT_markprice,5,0,2,3,0.0,0.0,-0.008113481767050075,-0.008113481767050075,-0.001622696353410015,0.00010977899446612691,9999.99980107718,9999.988823177951

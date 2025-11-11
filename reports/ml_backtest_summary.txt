@@ -1,0 +1,60 @@
+Dataset: BTCUSDT_markprice
+  Baseline
+    Trades: 1
+    Net PnL: 0.0000
+    Win rate: 0.00%
+    Max drawdown: 0.00%
+    Profit factor: 1.0000
+  ML Enabled
+    Trades: 0
+    Net PnL: 0.0000
+    Win rate: 0.00%
+    Max drawdown: 0.00%
+    Profit factor: 1.0000
+  Δ Performance (ML - Baseline)
+    ΔTrades: -1
+    ΔNet PnL: 0.0000
+    ΔWin rate: 0.00 pp
+    ΔDrawdown: 0.00 pp
+    ΔProfit factor: 0.0000
+
+Dataset: ETHUSDT_markprice
+  Baseline
+    Trades: 1
+    Net PnL: 0.0000
+    Win rate: 0.00%
+    Max drawdown: 0.00%
+    Profit factor: 1.0000
+  ML Enabled
+    Trades: 0
+    Net PnL: 0.0000
+    Win rate: 0.00%
+    Max drawdown: 0.00%
+    Profit factor: 1.0000
+  Δ Performance (ML - Baseline)
+    ΔTrades: -1
+    ΔNet PnL: 0.0000
+    ΔWin rate: 0.00 pp
+    ΔDrawdown: 0.00 pp
+    ΔProfit factor: 0.0000
+
+Dataset: BNBUSDT_markprice
+  Baseline
+    Trades: 5
+    Net PnL: -0.0081
+    Win rate: 0.00%
+    Max drawdown: 0.00%
+    Profit factor: 0.0000
+  ML Enabled
+    Trades: 0
+    Net PnL: 0.0000
+    Win rate: 0.00%
+    Max drawdown: 0.00%
+    Profit factor: 1.0000
+  Δ Performance (ML - Baseline)
+    ΔTrades: -5
+    ΔNet PnL: 0.0081
+    ΔWin rate: 0.00 pp
+    ΔDrawdown: -0.00 pp
+    ΔProfit factor: 1.0000
+

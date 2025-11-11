@@ -1,0 +1,27 @@
+Dataset: BTCUSDT_markprice
+  Baseline Profit Factor: 1.0000
+  Baseline Max Drawdown: 0.0000 %
+  ML Profit Factor: 1.0000
+  ML Max Drawdown: 0.0000 %
+  Δ Profit Factor: 0.0000
+  Δ Max Drawdown: 0.0000 pp
+  Sharpe Ratio: N/A (requires high-frequency returns)
+
+Dataset: ETHUSDT_markprice
+  Baseline Profit Factor: 1.0000
+  Baseline Max Drawdown: 0.0000 %
+  ML Profit Factor: 1.0000
+  ML Max Drawdown: 0.0000 %
+  Δ Profit Factor: 0.0000
+  Δ Max Drawdown: 0.0000 pp
+  Sharpe Ratio: N/A (requires high-frequency returns)
+
+Dataset: BNBUSDT_markprice
+  Baseline Profit Factor: 0.0000
+  Baseline Max Drawdown: 0.0001 %
+  ML Profit Factor: 1.0000
+  ML Max Drawdown: 0.0000 %
+  Δ Profit Factor: 1.0000
+  Δ Max Drawdown: -0.0000 pp
+  Sharpe Ratio: N/A (requires high-frequency returns)
+

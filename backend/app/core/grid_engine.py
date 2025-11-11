@@ -3,12 +3,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Deque, Dict, List, Optional
+from typing import Deque, Dict, List, Optional, TYPE_CHECKING
 from collections import deque
 
 from .grid_config import GridConfig
 from .risk_controller import RiskController, RiskLimitBreached
 from .trailing_manager import TrailingManager
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..ml.signal_model import SignalModel, SignalPrediction
 
 
 @dataclass(slots=True)
@@ -42,6 +45,7 @@ class GridEngine:
         *,
         trailing_manager: Optional[TrailingManager] = None,
         risk_controller: Optional[RiskController] = None,
+        signal_model: Optional["SignalModel"] = None,
     ) -> None:
         self.config = config
         self.trailing_manager = trailing_manager or TrailingManager(config.trailing_pct)
@@ -50,6 +54,22 @@ class GridEngine:
             max_drawdown_pct=config.max_drawdown_pct,
             max_capital_fraction=min(1.0, config.max_position / max(config.order_size, 1e-8)),
         )
+        self.signal_model: Optional["SignalModel"] = signal_model
+        if self.signal_model is None and self.config.ml_enabled:
+            try:
+                from ..ml.signal_model import SignalModel as _SignalModel
+
+                self.signal_model = _SignalModel.load_from_disk(
+                    mode=self.config.ml_mode,
+                    threshold=self.config.ml_threshold,
+                    window=self.config.ml_window,
+                    horizon=self.config.ml_horizon,
+                )
+            except FileNotFoundError:
+                self.signal_model = None
+        self._ml_active = self.config.ml_enabled and self.signal_model is not None
+        self._price_history: Deque[float] = deque(maxlen=self.config.ml_window + self.config.ml_horizon + 5)
+        self._last_signal: Optional["SignalPrediction"] = None
 
         self.cash = config.capital
         self.position = 0.0
@@ -95,6 +115,8 @@ class GridEngine:
             raise ValueError("Price must be positive")
         ts = timestamp or datetime.now(tz=timezone.utc)
         fills: List[ExecutionRecord] = []
+        self._price_history.append(price)
+        self._last_signal = self._evaluate_signal()
 
         fills.extend(self._process_levels(self.buy_levels, price, ts))
         fills.extend(self._process_levels(self.sell_levels, price, ts))
@@ -109,6 +131,8 @@ class GridEngine:
             if level.side == "buy" and market_price > level.price:
                 continue
             if level.side == "sell" and market_price < level.price:
+                continue
+            if level.side == "buy" and self._ml_active and not self._ml_allows_entry():
                 continue
 
             if level.side == "sell" and self.position < level.size:
@@ -163,6 +187,13 @@ class GridEngine:
             "capital_in_use": snapshot.capital_in_use,
             "position": self.position,
         }
+        if self._last_signal is not None:
+            metadata.update(
+                {
+                    "ml_probability": self._last_signal.probability,
+                    "ml_decision": float(self._last_signal.decision),
+                }
+            )
         return ExecutionRecord(
             timestamp=timestamp,
             side=level.side,
@@ -205,6 +236,13 @@ class GridEngine:
                 "position": self.position,
                 "trailing_stop": state.stop_price,
             }
+            if self._last_signal is not None:
+                metadata.update(
+                    {
+                        "ml_probability": self._last_signal.probability,
+                        "ml_decision": float(self._last_signal.decision),
+                    }
+                )
             fills.append(
                 ExecutionRecord(
                     timestamp=timestamp,
@@ -248,6 +286,24 @@ class GridEngine:
 
     def _compute_equity(self, reference_price: float) -> float:
         return self.cash + self.position * reference_price
+
+    def _evaluate_signal(self) -> Optional["SignalPrediction"]:
+        if not self._ml_active:
+            return None
+        if self.signal_model is None:
+            return None
+        prices = list(self._price_history)
+        try:
+            return self.signal_model.predict(prices)
+        except RuntimeError:
+            return None
+
+    def _ml_allows_entry(self) -> bool:
+        if not self._ml_active:
+            return True
+        if self._last_signal is None:
+            return True
+        return self._last_signal.decision
 
     # ------------------------------------------------------------------
     # Public state accessors
