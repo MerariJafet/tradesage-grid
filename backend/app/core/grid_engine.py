@@ -12,6 +12,11 @@ from .grid_config import GridConfig
 from .risk_controller import RiskController, RiskLimitBreached
 from .trailing_manager import TrailingManager
 
+try:  # pragma: no cover - optional adaptive module
+    from .adaptive.feedback_loop import AdaptiveFeedbackLoop
+except ImportError:  # pragma: no cover
+    AdaptiveFeedbackLoop = None
+
 if TYPE_CHECKING:  # pragma: no cover
     from ..ml.signal_model import SignalModel, SignalPrediction
 
@@ -77,6 +82,8 @@ class GridEngine:
         self._base_spacing_pct = config.spacing_pct
         self._base_levels = config.levels
         self._base_trailing_pct = config.trailing_pct
+        self._base_order_size = config.order_size
+        self._base_ml_threshold = config.ml_threshold
         self._current_confidence_band: Optional[str] = None
         self._gate_reason = "n/a"
         self._last_prob_up: Optional[float] = None
@@ -85,6 +92,8 @@ class GridEngine:
         self._last_gate_log_bar = -1
         self._last_gate_log_reason = ""
         self._last_gate_log_event = ""
+        self._feedback_loop = AdaptiveFeedbackLoop() if AdaptiveFeedbackLoop else None
+        self._last_feedback_applied_bar = -1
 
         self.cash = config.capital
         self.position = 0.0
@@ -134,6 +143,7 @@ class GridEngine:
         self._price_history.append(price)
         self._last_signal = self._evaluate_signal()
         self._apply_adaptive_changes()
+        self._apply_feedback_adjustments()
 
         fills.extend(self._process_levels(self.buy_levels, price, ts, current_bar))
         fills.extend(self._process_levels(self.sell_levels, price, ts, current_bar))
@@ -483,6 +493,59 @@ class GridEngine:
         self._last_gate_log_bar = current_bar
         self._last_gate_log_reason = reason
         self._last_gate_log_event = event
+
+    def _apply_feedback_adjustments(self) -> None:
+        if self._feedback_loop is None:
+            return
+        interval = getattr(self.config, "adaptive_feedback_interval", 25)
+        interval = max(1, int(interval))
+        if self._last_feedback_applied_bar >= 0:
+            if (self._bar_index - self._last_feedback_applied_bar) < interval:
+                return
+        adjustments = self._feedback_loop.compute_adjustments()
+        if not adjustments:
+            return
+        spacing_factor = float(adjustments.get("spacing", 1.0))
+        order_size_factor = float(adjustments.get("order_size", 1.0))
+        threshold_target_raw = adjustments.get("ml_threshold")
+
+        base_spacing = self._base_spacing_pct
+        spacing_target = self.config.spacing_pct * spacing_factor
+        spacing_target = max(max(0.01, base_spacing * 0.5), min(base_spacing * 1.5, spacing_target))
+
+        base_order_size = self._base_order_size
+        order_size_target = self.config.order_size * order_size_factor
+        order_size_target = max(base_order_size * 0.5, min(base_order_size * 1.5, order_size_target))
+
+        if threshold_target_raw is None:
+            threshold_target = self.config.ml_threshold
+        else:
+            base_threshold = self._base_ml_threshold
+            min_threshold = max(0.05, base_threshold - 0.20)
+            max_threshold = min(0.95, base_threshold + 0.20)
+            threshold_target = max(min_threshold, min(max_threshold, float(threshold_target_raw)))
+
+        changed = False
+        if not math.isclose(self.config.spacing_pct, spacing_target, rel_tol=1e-4):
+            self.config.spacing_pct = spacing_target
+            changed = True
+        if not math.isclose(self.config.order_size, order_size_target, rel_tol=1e-4):
+            self.config.order_size = order_size_target
+            changed = True
+        if not math.isclose(self.config.ml_threshold, threshold_target, rel_tol=1e-4):
+            self.config.ml_threshold = threshold_target
+            changed = True
+
+        if changed:
+            self.generate_levels(self.config.base_price)
+            self._last_feedback_applied_bar = self._bar_index
+            print(
+                "[ADAPTIVE] Updated spacing_pct={:.4f}% order_size={} ml_threshold={:.2f}".format(
+                    self.config.spacing_pct,
+                    f"{self.config.order_size:.6f}",
+                    self.config.ml_threshold,
+                )
+            )
 
     # ------------------------------------------------------------------
     # Public state accessors
