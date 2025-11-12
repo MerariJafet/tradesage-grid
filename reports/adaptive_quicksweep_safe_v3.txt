@@ -1,0 +1,194 @@
+ADAPTIVE QUICK SWEEP 20251112-020816 UTC
+Parameters: ml_threshold=[0.8, 0.82, 0.85], ml_min_edge=[0.1, 0.12, 0.15], cooldown_after_losses=[2, 3, 4]
+
+▶ Running t0.8_e0.1_c2
+✔ Sweep done: t0.8_e0.1_c2 (gate events: 8301)
+    2025-11-12T02:08:24.948292+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:08:24.948755+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:08:24.949225+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:08:24.949693+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:08:24.950157+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.8_e0.1_c3
+✔ Sweep done: t0.8_e0.1_c3 (gate events: 8301)
+    2025-11-12T02:08:32.598678+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:08:32.599119+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:08:32.599562+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:08:32.600017+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:08:32.600471+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.8_e0.1_c4
+✔ Sweep done: t0.8_e0.1_c4 (gate events: 8301)
+    2025-11-12T02:08:40.775653+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:08:40.776103+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:08:40.776546+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:08:40.776999+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:08:40.777437+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.8_e0.12_c2
+✔ Sweep done: t0.8_e0.12_c2 (gate events: 8301)
+    2025-11-12T02:08:48.430118+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:08:48.430679+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:08:48.431177+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:08:48.431691+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:08:48.432159+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.8_e0.12_c3
+✔ Sweep done: t0.8_e0.12_c3 (gate events: 8301)
+    2025-11-12T02:08:55.740287+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:08:55.740745+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:08:55.741205+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:08:55.741653+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:08:55.742099+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.8_e0.12_c4
+✔ Sweep done: t0.8_e0.12_c4 (gate events: 8301)
+    2025-11-12T02:09:04.167409+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:09:04.167861+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:09:04.168303+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:09:04.168751+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:09:04.169196+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.8_e0.15_c2
+✔ Sweep done: t0.8_e0.15_c2 (gate events: 8301)
+    2025-11-12T02:09:12.534692+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:09:12.535171+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:09:12.535659+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:09:12.536151+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:09:12.536633+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.8_e0.15_c3
+✔ Sweep done: t0.8_e0.15_c3 (gate events: 8301)
+    2025-11-12T02:09:21.296329+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:09:21.296769+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:09:21.297223+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:09:21.297695+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:09:21.298144+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.8_e0.15_c4
+✔ Sweep done: t0.8_e0.15_c4 (gate events: 8301)
+    2025-11-12T02:09:28.948809+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:09:28.949313+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:09:28.949774+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:09:28.950230+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:09:28.950695+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.1_c2
+✔ Sweep done: t0.82_e0.1_c2 (gate events: 8327)
+    2025-11-12T02:09:36.859252+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:09:36.859707+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:09:36.860152+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:09:36.860593+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:09:36.861031+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.1_c3
+✔ Sweep done: t0.82_e0.1_c3 (gate events: 8327)
+    2025-11-12T02:09:44.771186+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:09:44.771638+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:09:44.772082+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:09:44.772852+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:09:44.773726+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.1_c4
+✔ Sweep done: t0.82_e0.1_c4 (gate events: 8327)
+    2025-11-12T02:09:52.077821+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:09:52.078279+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:09:52.078733+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:09:52.079183+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:09:52.079633+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.12_c2
+✔ Sweep done: t0.82_e0.12_c2 (gate events: 8327)
+    2025-11-12T02:10:00.157671+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:10:00.158107+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:10:00.158548+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:10:00.159378+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:10:00.160097+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.12_c3
+✔ Sweep done: t0.82_e0.12_c3 (gate events: 8327)
+    2025-11-12T02:10:08.937832+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:10:08.938421+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:10:08.938973+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:10:08.939490+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:10:08.939979+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.12_c4
+✔ Sweep done: t0.82_e0.12_c4 (gate events: 8327)
+    2025-11-12T02:10:18.597197+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:10:18.597698+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:10:18.598206+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:10:18.598738+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:10:18.599237+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.15_c2
+✔ Sweep done: t0.82_e0.15_c2 (gate events: 8327)
+    2025-11-12T02:10:28.456971+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:10:28.457429+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:10:28.457873+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:10:28.458311+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:10:28.458750+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.15_c3
+✔ Sweep done: t0.82_e0.15_c3 (gate events: 8327)
+    2025-11-12T02:10:36.056736+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:10:36.057172+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:10:36.057608+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:10:36.058045+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:10:36.058482+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.82_e0.15_c4
+✔ Sweep done: t0.82_e0.15_c4 (gate events: 8327)
+    2025-11-12T02:10:43.453441+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:10:43.453881+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:10:43.454324+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:10:43.454761+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:10:43.455199+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.1_c2
+✔ Sweep done: t0.85_e0.1_c2 (gate events: 9484)
+    2025-11-12T02:10:51.697605+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:10:51.698053+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:10:51.698504+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:10:51.698954+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:10:51.699418+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.1_c3
+✔ Sweep done: t0.85_e0.1_c3 (gate events: 9484)
+    2025-11-12T02:11:01.316811+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:11:01.317260+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:11:01.317705+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:11:01.318162+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:11:01.318606+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.1_c4
+✔ Sweep done: t0.85_e0.1_c4 (gate events: 9484)
+    2025-11-12T02:11:09.837277+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:11:09.837756+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:11:09.838253+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:11:09.838781+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:11:09.839262+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.12_c2
+✔ Sweep done: t0.85_e0.12_c2 (gate events: 9484)
+    2025-11-12T02:11:17.932102+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:11:17.932554+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:11:17.933020+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:11:17.933481+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:11:17.933925+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.12_c3
+✔ Sweep done: t0.85_e0.12_c3 (gate events: 9484)
+    2025-11-12T02:11:26.129610+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:11:26.130058+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:11:26.130516+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:11:26.130964+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:11:26.131413+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.12_c4
+✔ Sweep done: t0.85_e0.12_c4 (gate events: 9484)
+    2025-11-12T02:11:34.221613+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3635 band=base
+    2025-11-12T02:11:34.222478+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:11:34.222924+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:11:34.223378+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:11:34.223816+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.15_c2
+✔ Sweep done: t0.85_e0.15_c2 (gate events: 9484)
+    2025-11-12T02:11:42.613271+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:11:42.613710+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:11:42.614148+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:11:42.614582+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:11:42.615014+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.15_c3
+✔ Sweep done: t0.85_e0.15_c3 (gate events: 9484)
+    2025-11-12T02:11:51.544484+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:11:51.545387+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:11:51.545869+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:11:51.546338+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:11:51.546804+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+▶ Running t0.85_e0.15_c4
+✔ Sweep done: t0.85_e0.15_c4 (gate events: 9484)
+    2025-11-12T02:12:01.369276+00:00 symbol=BTCUSDT event=gate reason=edge_fail prob_up=0.3635 band=base
+    2025-11-12T02:12:01.369853+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3219 band=base
+    2025-11-12T02:12:01.370387+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.3358 band=base
+    2025-11-12T02:12:01.370953+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.2935 band=base
+    2025-11-12T02:12:01.371452+00:00 symbol=BTCUSDT event=gate reason=threshold_fail prob_up=0.1871 band=base
+
+Sweep completed.

@@ -84,3 +84,8 @@ Data preserved for future use:
 [INFO] Local-only updates retained for requirements.txt and downloader script
 [STEP 12] SPRINT 4 - REAL DATA INTEGRATION + UTC FIX ✅
 [STEP 13] SPRINT 5 - ML TRAINING & VALIDATION ✅
+[STEP 14] SPRINT 6 - ADAPTIVE GRID INTELLIGENCE ✅
+[SAFE_PATCH_FAIL] Missing should_cooldown or gate_reason in current codebase
+[STEP 17] SPRINT 6C - RISK CONTROLLER + GATE PATCH ✅
+[SAFE_PATCH_RESOLVED] should_cooldown and gate_reason available for adaptive gating
+[STEP 18] SPRINT 6D - LOG DEDUPE + VALIDATION COMPLETE ✅

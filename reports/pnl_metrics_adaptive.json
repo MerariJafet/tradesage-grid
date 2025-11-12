@@ -1,0 +1,47 @@
+{
+  "BTCUSDT_markprice": {
+    "dataset": "BTCUSDT_markprice",
+    "total_trades": 0,
+    "winning_trades": 0,
+    "losing_trades": 0,
+    "breakeven_trades": 0,
+    "win_rate": 0.0,
+    "gross_profit": 0,
+    "gross_loss": 0,
+    "net_pnl": 0,
+    "average_pnl": 0.0,
+    "max_drawdown_pct": 0.0,
+    "max_equity": 10000.0,
+    "min_equity": 10000.0
+  },
+  "ETHUSDT_markprice": {
+    "dataset": "ETHUSDT_markprice",
+    "total_trades": 0,
+    "winning_trades": 0,
+    "losing_trades": 0,
+    "breakeven_trades": 0,
+    "win_rate": 0.0,
+    "gross_profit": 0,
+    "gross_loss": 0,
+    "net_pnl": 0,
+    "average_pnl": 0.0,
+    "max_drawdown_pct": 0.0,
+    "max_equity": 10000.0,
+    "min_equity": 10000.0
+  },
+  "BNBUSDT_markprice": {
+    "dataset": "BNBUSDT_markprice",
+    "total_trades": 0,
+    "winning_trades": 0,
+    "losing_trades": 0,
+    "breakeven_trades": 0,
+    "win_rate": 0.0,
+    "gross_profit": 0,
+    "gross_loss": 0,
+    "net_pnl": 0,
+    "average_pnl": 0.0,
+    "max_drawdown_pct": 0.0,
+    "max_equity": 10000.0,
+    "min_equity": 10000.0
+  }
+}

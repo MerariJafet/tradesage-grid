@@ -1,0 +1,27 @@
+Dataset: BTCUSDT_markprice
+  Reference Profit Factor: 1.0000
+  Reference Max Drawdown: 0.0000 %
+  Adaptive Profit Factor: 1.0000
+  Adaptive Max Drawdown: 0.0000 %
+  Δ Profit Factor (Adaptive - Reference): 0.0000
+  Δ Max Drawdown (Adaptive - Reference): 0.0000 pp
+  Sharpe Ratio: N/A (requires high-frequency returns)
+
+Dataset: ETHUSDT_markprice
+  Reference Profit Factor: 1.0000
+  Reference Max Drawdown: 0.0000 %
+  Adaptive Profit Factor: 1.0000
+  Adaptive Max Drawdown: 0.0000 %
+  Δ Profit Factor (Adaptive - Reference): 0.0000
+  Δ Max Drawdown (Adaptive - Reference): 0.0000 pp
+  Sharpe Ratio: N/A (requires high-frequency returns)
+
+Dataset: BNBUSDT_markprice
+  Reference Profit Factor: 1.0000
+  Reference Max Drawdown: 0.0000 %
+  Adaptive Profit Factor: 1.0000
+  Adaptive Max Drawdown: 0.0000 %
+  Δ Profit Factor (Adaptive - Reference): 0.0000
+  Δ Max Drawdown (Adaptive - Reference): 0.0000 pp
+  Sharpe Ratio: N/A (requires high-frequency returns)
+

@@ -86,3 +86,6 @@ class TrailingManager:
         if direction == "long":
             return entry_price * (1 - ratio)
         return entry_price * (1 + ratio)
+
+    def update_default(self, trailing_pct: float) -> None:
+        self.default_trailing_pct = max(trailing_pct, 0.01)

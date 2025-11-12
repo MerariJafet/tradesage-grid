@@ -187,7 +187,13 @@ def _parse_ml_summary(path: Path) -> Dict[str, Dict[str, Dict[str, float]]]:
             continue
         if raw_line.startswith("Dataset:"):
             dataset = raw_line.split(":", 1)[1].strip()
-            parsed[dataset] = {"baseline": {}, "ml": {}, "delta": {}}
+            parsed[dataset] = {
+                "baseline": {},
+                "ml": {},
+                "delta_ml": {},
+                "adaptive": {},
+                "delta_adaptive": {},
+            }
             section = None
             continue
         if dataset is None:
@@ -199,8 +205,14 @@ def _parse_ml_summary(path: Path) -> Dict[str, Dict[str, Dict[str, float]]]:
         if stripped == "ML Enabled":
             section = "ml"
             continue
-        if stripped.startswith("Δ Performance"):
-            section = "delta"
+        if stripped.startswith("Δ Performance") or stripped.startswith("Δ ML"):
+            section = "delta_ml"
+            continue
+        if stripped == "Adaptive":
+            section = "adaptive"
+            continue
+        if stripped.startswith("Δ Adaptive"):
+            section = "delta_adaptive"
             continue
         if section is None or ":" not in stripped:
             continue
@@ -233,25 +245,37 @@ def compare_reports(baseline_csv: Path, summary_txt: Path) -> List[str]:
     summary = _parse_ml_summary(summary_txt)
     lines: List[str] = []
 
-    for dataset, base_metrics in baseline.items():
-        ml_metrics = summary.get(dataset, {}).get("ml", {})
-        delta_metrics = summary.get(dataset, {}).get("delta", {})
-
-        base_pf = _profit_factor_from_metrics(base_metrics)
-        base_drawdown = base_metrics.get("max_drawdown_pct", math.nan)
-
-        ml_pf = ml_metrics.get("Profit factor", math.nan)
-        ml_drawdown = ml_metrics.get("Max drawdown", math.nan)
-        delta_pf = delta_metrics.get("ΔProfit factor", math.nan)
-        delta_dd = delta_metrics.get("ΔDrawdown", math.nan)
+    for dataset, reference_metrics in baseline.items():
+        dataset_sections = summary.get(dataset, {})
+        adaptive_section = dataset_sections.get("adaptive", {})
+        delta_adaptive = dataset_sections.get("delta_adaptive", {})
 
         lines.append(f"Dataset: {dataset}")
-        lines.append(f"  Baseline Profit Factor: {base_pf if math.isfinite(base_pf) else float('inf'):.4f}")
-        lines.append(f"  Baseline Max Drawdown: {base_drawdown:.4f} %")
-        lines.append(f"  ML Profit Factor: {ml_pf:.4f}")
-        lines.append(f"  ML Max Drawdown: {ml_drawdown:.4f} %")
-        lines.append(f"  Δ Profit Factor: {delta_pf:.4f}")
-        lines.append(f"  Δ Max Drawdown: {delta_dd:.4f} pp")
+
+        if not adaptive_section:
+            lines.append("  Adaptive results not found in summary.")
+            lines.append("")
+            continue
+
+        ref_pf = _profit_factor_from_metrics(reference_metrics)
+        ref_drawdown = reference_metrics.get("max_drawdown_pct", math.nan)
+
+        adaptive_pf = adaptive_section.get("Profit factor", math.nan)
+        adaptive_drawdown = adaptive_section.get("Max drawdown", math.nan)
+        delta_pf = delta_adaptive.get("ΔProfit factor", math.nan)
+        delta_dd = delta_adaptive.get("ΔDrawdown", math.nan)
+
+        if math.isnan(delta_pf) and math.isfinite(adaptive_pf) and math.isfinite(ref_pf):
+            delta_pf = adaptive_pf - ref_pf
+        if math.isnan(delta_dd) and math.isfinite(adaptive_drawdown) and math.isfinite(ref_drawdown):
+            delta_dd = adaptive_drawdown - ref_drawdown
+
+        lines.append(f"  Reference Profit Factor: {ref_pf if math.isfinite(ref_pf) else float('inf'):.4f}")
+        lines.append(f"  Reference Max Drawdown: {ref_drawdown:.4f} %")
+        lines.append(f"  Adaptive Profit Factor: {adaptive_pf:.4f}")
+        lines.append(f"  Adaptive Max Drawdown: {adaptive_drawdown:.4f} %")
+        lines.append(f"  Δ Profit Factor (Adaptive - Reference): {delta_pf:.4f}")
+        lines.append(f"  Δ Max Drawdown (Adaptive - Reference): {delta_dd:.4f} pp")
         lines.append("  Sharpe Ratio: N/A (requires high-frequency returns)")
         lines.append("")
 

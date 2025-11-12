@@ -1,10 +1,12 @@
 """Core GridEngine implementation supporting symmetric grid generation and trailing exits."""
 from __future__ import annotations
 
+import math
+from collections import deque
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Deque, Dict, List, Optional, TYPE_CHECKING
-from collections import deque
 
 from .grid_config import GridConfig
 from .risk_controller import RiskController, RiskLimitBreached
@@ -48,11 +50,13 @@ class GridEngine:
         signal_model: Optional["SignalModel"] = None,
     ) -> None:
         self.config = config
+        self.cfg = config
         self.trailing_manager = trailing_manager or TrailingManager(config.trailing_pct)
         self.risk_controller = risk_controller or RiskController(
             initial_equity=config.capital,
             max_drawdown_pct=config.max_drawdown_pct,
             max_capital_fraction=min(1.0, config.max_position / max(config.order_size, 1e-8)),
+            config=config,
         )
         self.signal_model: Optional["SignalModel"] = signal_model
         if self.signal_model is None and self.config.ml_enabled:
@@ -70,6 +74,17 @@ class GridEngine:
         self._ml_active = self.config.ml_enabled and self.signal_model is not None
         self._price_history: Deque[float] = deque(maxlen=self.config.ml_window + self.config.ml_horizon + 5)
         self._last_signal: Optional["SignalPrediction"] = None
+        self._base_spacing_pct = config.spacing_pct
+        self._base_levels = config.levels
+        self._base_trailing_pct = config.trailing_pct
+        self._current_confidence_band: Optional[str] = None
+        self._gate_reason = "n/a"
+        self._last_prob_up: Optional[float] = None
+        self._last_prob_down: Optional[float] = None
+        self._bar_index = 0
+        self._last_gate_log_bar = -1
+        self._last_gate_log_reason = ""
+        self._last_gate_log_event = ""
 
         self.cash = config.capital
         self.position = 0.0
@@ -115,16 +130,26 @@ class GridEngine:
             raise ValueError("Price must be positive")
         ts = timestamp or datetime.now(tz=timezone.utc)
         fills: List[ExecutionRecord] = []
+        current_bar = self._bar_index
         self._price_history.append(price)
         self._last_signal = self._evaluate_signal()
+        self._apply_adaptive_changes()
 
-        fills.extend(self._process_levels(self.buy_levels, price, ts))
-        fills.extend(self._process_levels(self.sell_levels, price, ts))
-        fills.extend(self._process_trailing(price, ts))
+        fills.extend(self._process_levels(self.buy_levels, price, ts, current_bar))
+        fills.extend(self._process_levels(self.sell_levels, price, ts, current_bar))
+        fills.extend(self._process_trailing(price, ts, current_bar))
+        self._bar_index += 1
         return fills
 
-    def _process_levels(self, levels: List[GridLevel], market_price: float, timestamp: datetime) -> List[ExecutionRecord]:
+    def _process_levels(
+        self,
+        levels: List[GridLevel],
+        market_price: float,
+        timestamp: datetime,
+        current_bar: int,
+    ) -> List[ExecutionRecord]:
         fills: List[ExecutionRecord] = []
+        cooldown_logged = False
         for level in levels:
             if level.filled:
                 continue
@@ -132,8 +157,14 @@ class GridEngine:
                 continue
             if level.side == "sell" and market_price < level.price:
                 continue
-            if level.side == "buy" and self._ml_active and not self._ml_allows_entry():
-                continue
+            if level.side == "buy":
+                if hasattr(self.risk_controller, "should_cooldown") and self.risk_controller.should_cooldown(current_bar):
+                    if not cooldown_logged:
+                        self._log_gate_event("cooldown", self._last_prob_up or 0.0, "cooldown", current_bar)
+                        cooldown_logged = True
+                    continue
+                if self._ml_active and not self._ml_allows_entry(current_bar):
+                    continue
 
             if level.side == "sell" and self.position < level.size:
                 continue
@@ -143,14 +174,14 @@ class GridEngine:
                 continue
 
             try:
-                record = self._execute(level, timestamp)
+                record = self._execute(level, timestamp, current_bar)
             except RiskLimitBreached:
                 continue
             if record:
                 fills.append(record)
         return fills
 
-    def _execute(self, level: GridLevel, timestamp: datetime) -> Optional[ExecutionRecord]:
+    def _execute(self, level: GridLevel, timestamp: datetime, current_bar: int) -> Optional[ExecutionRecord]:
         notional = level.price * level.size
         fee_ratio = self.config.maker_fee_ratio
         fee = notional * fee_ratio
@@ -177,6 +208,8 @@ class GridEngine:
             pnl = (level.price - entry_price) * level.size
             self.realized_pnl += pnl
             self.risk_controller.register_fill(notional, is_long=False)
+            if hasattr(self.risk_controller, "record_trade"):
+                self.risk_controller.record_trade(pnl, current_bar)
 
         level.filled = True
         equity = self._compute_equity(level.price)
@@ -188,9 +221,12 @@ class GridEngine:
             "position": self.position,
         }
         if self._last_signal is not None:
+            prob_up = self._last_prob_up if self._last_prob_up is not None else self._last_signal.probability
+            prob_down = self._last_prob_down if self._last_prob_down is not None else max(0.0, 1.0 - prob_up)
             metadata.update(
                 {
-                    "ml_probability": self._last_signal.probability,
+                    "ml_probability": prob_up,
+                    "ml_probability_down": prob_down,
                     "ml_decision": float(self._last_signal.decision),
                 }
             )
@@ -206,7 +242,7 @@ class GridEngine:
             metadata=metadata,
         )
 
-    def _process_trailing(self, price: float, timestamp: datetime) -> List[ExecutionRecord]:
+    def _process_trailing(self, price: float, timestamp: datetime, current_bar: int) -> List[ExecutionRecord]:
         fills: List[ExecutionRecord] = []
         if not self._open_positions:
             return fills
@@ -227,6 +263,8 @@ class GridEngine:
             pnl = (price - entry_price) * size
             self.realized_pnl += pnl
             self.risk_controller.register_fill(notional, is_long=False)
+            if hasattr(self.risk_controller, "record_trade"):
+                self.risk_controller.record_trade(pnl, current_bar)
             equity = self._compute_equity(price)
             snapshot = self.risk_controller.update_equity(equity)
             metadata = {
@@ -237,9 +275,12 @@ class GridEngine:
                 "trailing_stop": state.stop_price,
             }
             if self._last_signal is not None:
+                prob_up = self._last_prob_up if self._last_prob_up is not None else self._last_signal.probability
+                prob_down = self._last_prob_down if self._last_prob_down is not None else max(0.0, 1.0 - prob_up)
                 metadata.update(
                     {
-                        "ml_probability": self._last_signal.probability,
+                        "ml_probability": prob_up,
+                        "ml_probability_down": prob_down,
                         "ml_decision": float(self._last_signal.decision),
                     }
                 )
@@ -289,21 +330,159 @@ class GridEngine:
 
     def _evaluate_signal(self) -> Optional["SignalPrediction"]:
         if not self._ml_active:
+            self._last_prob_up = None
+            self._last_prob_down = None
             return None
         if self.signal_model is None:
+            self._last_prob_up = None
+            self._last_prob_down = None
             return None
         prices = list(self._price_history)
         try:
-            return self.signal_model.predict(prices)
+            prediction = self.signal_model.predict(prices)
         except RuntimeError:
+            self._last_prob_up = None
+            self._last_prob_down = None
             return None
+        self._last_prob_up = float(prediction.probability)
+        self._last_prob_down = max(0.0, 1.0 - self._last_prob_up)
+        return prediction
 
-    def _ml_allows_entry(self) -> bool:
+    def _ml_allows_entry(self, current_bar: int) -> bool:
         if not self._ml_active:
+            self._gate_reason = "ml_disabled"
             return True
         if self._last_signal is None:
-            return True
-        return self._last_signal.decision
+            self._gate_reason = "no_signal"
+            self._log_gate_event("gate", self._last_prob_up or 0.0, self._gate_reason, current_bar)
+            return False
+        prob_up = self._last_prob_up if self._last_prob_up is not None else self._last_signal.probability
+        prob_down = self._last_prob_down if self._last_prob_down is not None else max(0.0, 1.0 - prob_up)
+        if not self.evaluate_ml_gate(prob_up, prob_down):
+            self._log_gate_event("gate", prob_up, self._gate_reason, current_bar)
+            return False
+        decision = self._last_signal.decision
+        if not decision and self.config.ml_mode == "probability":
+            self._gate_reason = "model_reject"
+            self._log_gate_event("gate", prob_up, self._gate_reason, current_bar)
+            return False
+        self._gate_reason = "ok"
+        return True
+
+    def evaluate_ml_gate(self, ml_prob_up: float, ml_prob_down: float) -> bool:
+        _ = ml_prob_down  # placeholder for future asymmetric gating support
+        edge = abs(ml_prob_up - 0.5)
+        min_edge = getattr(self.config, "ml_min_edge", 0.12)
+        threshold = getattr(self.config, "ml_threshold", 0.55)
+        if edge < min_edge:
+            self._gate_reason = "edge_fail"
+            return False
+        if ml_prob_up < threshold:
+            self._gate_reason = "threshold_fail"
+            return False
+        self._gate_reason = "ok"
+        return True
+
+    # ------------------------------------------------------------------
+    # Adaptive grid helpers
+    # ------------------------------------------------------------------
+    def _apply_adaptive_changes(self) -> None:
+        if not self.config.adaptive_mode:
+            return
+        if self._last_signal is None:
+            return
+        probability = self._last_signal.probability
+        self.adjust_grid_by_confidence(probability)
+
+    def adjust_grid_by_confidence(self, probability: float) -> None:
+        band = self._select_confidence_band(probability)
+        if band is None:
+            if self._current_confidence_band is None:
+                return
+            self.config.spacing_pct = self._base_spacing_pct
+            self.config.levels = self._base_levels
+            self.config.trailing_pct = self._base_trailing_pct
+            self.trailing_manager.update_default(self._base_trailing_pct)
+            self.generate_levels(self.config.base_price)
+            self._current_confidence_band = None
+            self._log_adaptive_change(probability, "base")
+            return
+        if band == self._current_confidence_band:
+            return
+
+        spacing_map = self.config.adaptive_multipliers.get("spacing", {})
+        level_map = self.config.adaptive_multipliers.get("levels", {})
+        trailing_map = self.config.adaptive_multipliers.get("trailing", {})
+
+        spacing_multiplier = spacing_map.get(band, 1.0)
+        target_levels = level_map.get(band, float(self._base_levels))
+        target_trailing = trailing_map.get(band, self._base_trailing_pct)
+
+        new_spacing = max(self._base_spacing_pct * spacing_multiplier, 0.01)
+        new_levels = max(int(round(target_levels)), 1)
+        new_trailing = max(float(target_trailing), 0.01)
+
+        spacing_changed = not math.isclose(self.config.spacing_pct, new_spacing, rel_tol=1e-6)
+        levels_changed = self.config.levels != new_levels
+        trailing_changed = not math.isclose(self.config.trailing_pct, new_trailing, rel_tol=1e-6)
+
+        if not any([spacing_changed, levels_changed, trailing_changed]):
+            self._current_confidence_band = band
+            return
+
+        self.config.spacing_pct = new_spacing
+        self.config.levels = new_levels
+        self.config.trailing_pct = new_trailing
+        self.trailing_manager.update_default(new_trailing)
+        self.generate_levels(self.config.base_price)
+        self._current_confidence_band = band
+        self._log_adaptive_change(probability, band)
+
+    def _select_confidence_band(self, probability: float) -> Optional[str]:
+        bands = self.config.ml_confidence_bands
+        low = bands.get("low", 0.0)
+        neutral = bands.get("neutral", low)
+        high = bands.get("high", 1.0)
+        if probability >= high:
+            return "high"
+        if probability >= neutral:
+            return "neutral"
+        if probability >= low:
+            return "low"
+        return None
+
+    def _log_adaptive_change(self, probability: float, band: str) -> None:
+        log_path = Path("logs/ml_adaptive_changes.log")
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now(tz=timezone.utc).isoformat()
+        line = (
+            f"{timestamp} symbol={self.config.symbol} band={band} prob={probability:.4f} "
+            f"spacing_pct={self.config.spacing_pct:.6f} levels={self.config.levels} "
+            f"trailing_pct={self.config.trailing_pct:.6f}\n"
+        )
+        with log_path.open("a", encoding="utf-8") as handle:
+            handle.write(line)
+
+    def _log_gate_event(self, event: str, probability: float, reason: str, current_bar: int) -> None:
+        log_path = Path("logs/ml_adaptive_changes.log")
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        if (
+            self._last_gate_log_bar == current_bar
+            and self._last_gate_log_reason == reason
+            and self._last_gate_log_event == event
+        ):
+            return
+        timestamp = datetime.now(tz=timezone.utc).isoformat()
+        band = self._current_confidence_band or "base"
+        line = (
+            f"{timestamp} symbol={self.config.symbol} event={event} reason={reason} "
+            f"prob_up={probability:.4f} band={band}\n"
+        )
+        with log_path.open("a", encoding="utf-8") as handle:
+            handle.write(line)
+        self._last_gate_log_bar = current_bar
+        self._last_gate_log_reason = reason
+        self._last_gate_log_event = event
 
     # ------------------------------------------------------------------
     # Public state accessors
@@ -334,3 +513,11 @@ class GridEngine:
         self._position_seq = 0
         self.generate_levels(self.config.base_price)
         self.risk_controller.reset(initial_equity=self.config.capital)
+        self._bar_index = 0
+        self._last_signal = None
+        self._last_prob_up = None
+        self._last_prob_down = None
+        self._gate_reason = "n/a"
+        self._last_gate_log_bar = -1
+        self._last_gate_log_reason = ""
+        self._last_gate_log_event = ""
