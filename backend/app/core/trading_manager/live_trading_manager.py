@@ -5,11 +5,13 @@ from pathlib import Path
 
 try:
     from backend.app.core.risk_controller import RiskController
+    from backend.app.core.persistence.trade_logger import TradeLogger
 except ModuleNotFoundError:  # pragma: no cover - runtime fallback for script execution
     PROJECT_ROOT = Path(__file__).resolve().parents[4]
     if str(PROJECT_ROOT) not in sys.path:
         sys.path.append(str(PROJECT_ROOT))
     from backend.app.core.risk_controller import RiskController
+    from backend.app.core.persistence.trade_logger import TradeLogger
 
 
 class LiveTradingManager:
@@ -18,7 +20,8 @@ class LiveTradingManager:
         self.total_volume = 0.0
         self.avg_price = 0.0
         self.risk = RiskController(initial_equity=self.balance, max_exposure=0.20, cooldown_seconds=10.0)
-        print("[INIT] Trading Manager active with balance:", self.balance)
+        self.logger = TradeLogger()
+        print("[INIT] Trading Manager active with persistence enabled. Balance:", self.balance)
 
     async def process_trade(self, trade: dict) -> None:
         if self.risk.should_cooldown():
@@ -51,6 +54,15 @@ class LiveTradingManager:
         print(
             f"[TRADE] {ts} | {trade.get('symbol', 'UNKNOWN')} | {price:.2f} "
             f"| Qty: {qty:.6f} | Avg: {self.avg_price:.2f} | Vol: {self.total_volume:.6f}"
+        )
+        exposure = (self.total_volume * price / self.balance) if self.balance > 0 else 0.0
+        self.logger.log_trade(
+            trade.get("symbol", "UNKNOWN"),
+            price,
+            qty,
+            pnl,
+            exposure,
+            timestamp=timestamp.isoformat(),
         )
 
 
