@@ -7,11 +7,19 @@ from app.config import settings
 from app.api.routes import health, metrics, monitoring, strategies, dashboard, risk, signals
 from app.api.indicators import router as indicators_router
 from app.core.ws_manager import WebSocketManager
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 setup_logging()
 logger = get_logger("app")
 
+# Initialize rate limiter
+limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
+
 app = FastAPI(title="TradeSage Expert API")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # ✨ Añadir CORS para desarrollo
 app.add_middleware(
